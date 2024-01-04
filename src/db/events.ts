@@ -1,19 +1,20 @@
 import { relations } from 'drizzle-orm';
 import { pgTable, timestamp, uuid, varchar } from 'drizzle-orm/pg-core';
 import { registrations } from './registrations';
-import { votes } from './votes';
+import { cycles, registrationFields } from '.';
 
-export const users = pgTable('users', {
+export const events = pgTable('events', {
   id: uuid('id').primaryKey().defaultRandom(),
-  username: varchar('username', { length: 256 }).unique(),
-  email: varchar('email', { length: 256 }).unique(),
+  name: varchar('name').notNull(),
+  description: varchar('description'),
   createdAt: timestamp('created_at').notNull().defaultNow(),
   updatedAt: timestamp('updated_at').notNull().defaultNow(),
 });
 
-export const usersRelations = relations(users, ({ many }) => ({
+export const eventsRelations = relations(events, ({ many }) => ({
   registrations: many(registrations),
-  votes: many(votes),
+  registrationFields: many(registrationFields),
+  cycles: many(cycles),
 }));
 
-export type User = typeof users.$inferSelect; // return type when queried
+export type Event = typeof events.$inferSelect;
